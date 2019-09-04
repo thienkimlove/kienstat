@@ -60,9 +60,21 @@ class Report extends Model
         $countToday = Report::where('user_id', $this->user_id)
             ->whereDate('created_at', Carbon::today())
             ->count();
+
+
+        if ($countToday < 10) {
+            $increaseStr = "00".$countToday;
+        } elseif ($countToday < 100) {
+            $increaseStr = "0".$countToday;
+        } else {
+            $increaseStr = "".$countToday;
+        }
+
+        $strDate = Carbon::today()->toDateString();
+
         $this->update([
-            'code' => strtoupper($this->user->transport_code."00".$countToday),
-            'date' => Carbon::tomorrow()->toDateString(),
+            'code' => strtoupper($this->user->transport_code.Carbon::tomorrow()->format('dm').$increaseStr),
+            'date' => $strDate,
             'seller' => $this->user->name
         ]);
     }
