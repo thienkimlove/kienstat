@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\ReportExport;
 use App\Lib\Base;
 use App\Models\Report;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -11,6 +12,9 @@ use App\Http\Requests\ReportRequest as StoreRequest;
 use App\Http\Requests\ReportRequest as UpdateRequest;
 use Backpack\CRUD\CrudPanel;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Maatwebsite\Excel\Facades\Excel;
 use Prologue\Alerts\Facades\Alert;
 
 /**
@@ -50,6 +54,7 @@ class ReportCrudController extends CrudController
             [
                 'name' => 'content',
                 'label' => 'Nội dung',
+                'type' => 'textarea'
             ],
             [
                 'name' => 'name',
@@ -59,6 +64,7 @@ class ReportCrudController extends CrudController
             [
                 'name' => 'address',
                 'label' => 'Địa chỉ',
+                'type' => 'textarea'
             ],
 
             [
@@ -84,6 +90,7 @@ class ReportCrudController extends CrudController
             [
                 'name' => 'note',
                 'label' => 'Ghi chú',
+                'type' => 'textarea'
             ],
 
             [
@@ -185,6 +192,10 @@ class ReportCrudController extends CrudController
         //$this->crud->enableDetailsRow();
         //$this->crud->allowAccess('details_row');
 
+        $this->crud->denyAccess('delete');
+
+        $this->crud->addButtonFromView('top', 'export_button', 'export_button', 'beginning');
+
         $this->crud->enableExportButtons();
 
 
@@ -274,5 +285,11 @@ class ReportCrudController extends CrudController
         // your additional operations after save here
         // use $this->data['entry'] or $this->crud->entry
         return $redirect_location;
+    }
+
+    public function export(Request $request)
+    {
+
+        return Excel::download(new ReportExport($request->all()), 'report_'.md5(time()).'.xlsx');
     }
 }

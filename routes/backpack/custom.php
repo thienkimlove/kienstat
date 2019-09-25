@@ -14,4 +14,6 @@ Route::group([
 
     CRUD::resource('report', 'ReportCrudController');
 
+    Route::get('/report_export', 'ReportCrudController@export');
+
 }); // this should be the absolute last line of this file
